@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { GalleryItem, GalleryImg } from './ImageGalleryItem.styled';
 
 export const ImageGalleryItem = ({ image, name, largeImg, onClick }) => {
@@ -6,4 +7,11 @@ export const ImageGalleryItem = ({ image, name, largeImg, onClick }) => {
       <GalleryImg src={image} alt={name} />
     </GalleryItem>
   );
+};
+
+ImageGalleryItem.propTypes = {
+  image: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  largeImg: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
 };
