@@ -17,18 +17,13 @@ export class App extends Component {
     error: null,
     name: '',
     page: 1,
-    showModal: false,
     modalContent: '',
   };
 
   componentDidUpdate(prevProps, prevState) {
     const prevName = prevState.name;
-    const nextName = this.state.name;
     const { name, page } = this.state;
-    if (prevProps.name !== this.props.name) {
-      this.handleChangeState();
-    }
-    if (prevName !== nextName) {
+    if (prevName !== name) {
       this.fetchImages(name, page).then(response => {
         this.setState({ images: response, page: page + 1, loading: false });
       });
@@ -46,7 +41,10 @@ export class App extends Component {
       );
       return response.data.hits;
     } catch (error) {
+      this.setState({ error: `Sorry, we have an error: ${error}` });
       console.error(error);
+    } finally {
+      this.setState({ loading: false });
     }
   };
 
@@ -57,34 +55,32 @@ export class App extends Component {
       this.setState(prevState => ({
         images: [...prevState.images, ...response],
         page: prevState.page + 1,
-        loading: false,
       }));
     });
   };
 
   closeModal = () => {
     this.setState({
-      showModal: false,
       modalContent: '',
     });
   };
 
   openModal = largeImg => {
     this.setState({
-      showModal: true,
       modalContent: largeImg,
     });
   };
 
   render() {
-    const { images, loading, showModal, modalContent } = this.state;
+    const { images, loading, error, modalContent } = this.state;
     return (
       <StyledApp>
         <Searchbar onSubmit={this.handleChangeState}></Searchbar>
+        {error && <h2>{error}</h2>}
         <ImageGallery images={images} onClick={this.openModal}></ImageGallery>
         {loading && <Loader />}
         {images.length > 0 && <Button onClick={this.handleLoadMoreBtn} />}
-        {showModal && (
+        {modalContent && (
           <Modal onClose={this.closeModal}>
             <img src={modalContent} alt="" />
           </Modal>
